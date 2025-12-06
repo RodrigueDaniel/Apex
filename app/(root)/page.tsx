@@ -64,7 +64,7 @@ export default async function Dashboard() {
                                 ))}
                             </div>
                         ) : (
-                            <div className="flex flex-col items-center justify-center py-20 border border border-gray-800 rounded-2xl bg-white/5">
+                            <div className="flex flex-col items-center justify-center py-20 border border-gray-800 rounded-2xl bg-white/5">
                                 <div className="mb-6">
                                      <Image src="/assets/images/stock.png" alt="Empty" width={64} height={64} />
                                 </div>
