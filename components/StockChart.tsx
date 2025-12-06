@@ -1,71 +1,30 @@
 "use client";
-import React, { useEffect, useState, memo } from 'react';
+import React, { useState, memo } from 'react';
 import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area 
+  LineChart, Line, AreaChart, Area, BarChart, Bar,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
 } from 'recharts';
-import { Socket } from 'socket.io-client';
-import socket from '../lib/socket'; 
-
-const MAX_DATA_POINTS = 50; 
-const typedSocket = socket as Socket;
+import { LineChart as LineIcon, Activity, BarChart3 } from 'lucide-react';
 
 interface ChartData {
     time: string;
     price: number;
 }
 
-const StockChart = ({ symbol }: { symbol: string }) => { 
-    const [chartData, setChartData] = useState<ChartData[]>([]);
-    const [loading, setLoading] = useState(true);
-    
-    useEffect(() => {
-        if (!symbol) return; 
+type ChartType = 'line' | 'area' | 'bar';
 
-        if (!typedSocket.connected) {
-            typedSocket.connect();
-        }
+// Now accepts 'data' from parent instead of fetching it internally
+const StockChart = ({ data, color = "#A855F7" }: { data: ChartData[], color?: string }) => { 
+    const [chartType, setChartType] = useState<ChartType>('line');
 
-        const subscribeToTicker = () => {
-             typedSocket.emit('subscribe', symbol);
-        };
-        
-        subscribeToTicker();
-        typedSocket.on('connect', subscribeToTicker);
-
-        const handlePriceUpdate = (data: any) => {
-            if (data.symbol === symbol) {
-                setLoading(false); 
-
-                setChartData(prevData => {
-                    const newEntry = {
-                        time: new Date().toLocaleTimeString('en-US', { hour12: false }),
-                        price: data.price
-                    };
-                    const updatedData = [...prevData, newEntry];
-                    if (updatedData.length > MAX_DATA_POINTS) {
-                        updatedData.shift(); 
-                    }
-                    return updatedData;
-                });
-            }
-        };
-
-        typedSocket.on('price-update', handlePriceUpdate);
-
-        return () => {
-            typedSocket.off('price-update', handlePriceUpdate);
-            typedSocket.off('connect', subscribeToTicker);
-        };
-    }, [symbol]); 
-
-    // Custom Tooltip for the Dark Theme
+    // Custom Tooltip
     const CustomTooltip = ({ active, payload, label }: any) => {
         if (active && payload && payload.length) {
             return (
                 <div className="bg-[#0B0E14] border border-white/10 p-3 rounded-lg shadow-xl">
                     <p className="text-gray-400 text-xs mb-1">{label}</p>
                     <p className="text-purple-400 font-bold font-mono text-lg">
-                        ${payload[0].value.toFixed(2)}
+                        ${Number(payload[0].value).toFixed(2)}
                     </p>
                 </div>
             );
@@ -73,50 +32,63 @@ const StockChart = ({ symbol }: { symbol: string }) => {
         return null;
     };
 
-    if (loading) return (
-        <div className="h-[400px] w-full flex items-center justify-center text-purple-400 animate-pulse">
-            Connecting to live feed...
-        </div>
-    );
-
     return (
-        <div className="w-full h-[400px]">
+        <div className="w-full h-[400px] relative">
+            
+            {/* Chart Switcher Toolbar */}
+            <div className="absolute top-2 right-4 z-20 flex gap-1 bg-white/5 p-1 rounded-lg border border-white/10 backdrop-blur-md">
+                <button 
+                    onClick={() => setChartType('line')}
+                    className={`p-1.5 rounded-md transition-all ${chartType === 'line' ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                >
+                    <LineIcon className="w-4 h-4" />
+                </button>
+                <button 
+                    onClick={() => setChartType('area')}
+                    className={`p-1.5 rounded-md transition-all ${chartType === 'area' ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                >
+                    <Activity className="w-4 h-4" />
+                </button>
+                <button 
+                    onClick={() => setChartType('bar')}
+                    className={`p-1.5 rounded-md transition-all ${chartType === 'bar' ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                >
+                    <BarChart3 className="w-4 h-4" />
+                </button>
+            </div>
+
             <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                    {/* Dark/Subtle Grid */}
-                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                    
-                    {/* Axes */}
-                    <XAxis 
-                        dataKey="time" 
-                        stroke="#6b7280" 
-                        tick={{ fill: '#6b7280', fontSize: 12 }}
-                        tickLine={false}
-                        axisLine={false}
-                    />
-                    <YAxis 
-                        domain={['auto', 'auto']}
-                        stroke="#6b7280"
-                        tick={{ fill: '#6b7280', fontSize: 12 }}
-                        tickFormatter={(val) => `$${val.toFixed(0)}`}
-                        tickLine={false}
-                        axisLine={false}
-                        width={60}
-                    />
-                    
-                    <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#ffffff20' }} />
-                    
-                    {/* The Purple Line */}
-                    <Line 
-                        type="monotone" 
-                        dataKey="price" 
-                        stroke="#A855F7" // Purple-500
-                        strokeWidth={3} 
-                        dot={false} 
-                        activeDot={{ r: 6, fill: '#A855F7', stroke: '#fff' }}
-                        isAnimationActive={false} 
-                    />
-                </LineChart>
+                {chartType === 'line' ? (
+                    <LineChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                        <XAxis dataKey="time" stroke="#6b7280" tick={{ fill: '#6b7280', fontSize: 12 }} tickLine={false} axisLine={false} />
+                        <YAxis domain={['auto', 'auto']} stroke="#6b7280" tick={{ fill: '#6b7280', fontSize: 12 }} tickFormatter={(val) => `$${val.toFixed(0)}`} tickLine={false} axisLine={false} width={60} />
+                        <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#ffffff20' }} />
+                        <Line type="monotone" dataKey="price" stroke={color} strokeWidth={3} dot={false} activeDot={{ r: 6, fill: color, stroke: '#fff' }} isAnimationActive={false} />
+                    </LineChart>
+                ) : chartType === 'area' ? (
+                    <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                        <defs>
+                            <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor={color} stopOpacity={0.3}/>
+                                <stop offset="95%" stopColor={color} stopOpacity={0}/>
+                            </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                        <XAxis dataKey="time" stroke="#6b7280" tick={{ fill: '#6b7280', fontSize: 12 }} tickLine={false} axisLine={false} />
+                        <YAxis domain={['auto', 'auto']} stroke="#6b7280" tick={{ fill: '#6b7280', fontSize: 12 }} tickFormatter={(val) => `$${val.toFixed(0)}`} tickLine={false} axisLine={false} width={60} />
+                        <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#ffffff20' }} />
+                        <Area type="monotone" dataKey="price" stroke={color} strokeWidth={3} fillOpacity={1} fill="url(#colorPrice)" isAnimationActive={false} />
+                    </AreaChart>
+                ) : (
+                    <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                        <XAxis dataKey="time" stroke="#6b7280" tick={{ fill: '#6b7280', fontSize: 12 }} tickLine={false} axisLine={false} />
+                        <YAxis domain={['auto', 'auto']} stroke="#6b7280" tick={{ fill: '#6b7280', fontSize: 12 }} tickFormatter={(val) => `$${val.toFixed(0)}`} tickLine={false} axisLine={false} width={60} />
+                        <Tooltip content={<CustomTooltip />} cursor={{ fill: '#ffffff10' }} />
+                        <Bar dataKey="price" fill={color} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+                    </BarChart>
+                )}
             </ResponsiveContainer>
         </div>
     );

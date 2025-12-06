@@ -19,6 +19,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   watchlist     Watchlist[]
+  transactions  Transaction[]
 
   @@map("user")
 }
@@ -54,6 +55,7 @@ model Account {
   createdAt             DateTime
   updatedAt             DateTime
 
+   @@unique([providerId, accountId])
   @@map("account")
 }
 
@@ -79,4 +81,18 @@ model Watchlist {
   // Prevents saving the same stock twice for the same user
   @@unique([userId, symbol]) 
   @@map("watchlist")
+}
+
+model Transaction {
+  id        String   @id @default(cuid())
+  userId    String
+  symbol    String
+  type      String   // "BUY" or "SELL"
+  quantity  Int
+  price     Float    // Price at the time of trade
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
 }
