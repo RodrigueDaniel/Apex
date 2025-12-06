@@ -1,34 +1,66 @@
 "use client";
 import React, { useEffect, useState, memo } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-// 1. IMPORT THE SINGLETON (Make sure lib/socket.js exists!)
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  TooltipProps 
+} from 'recharts';
+// Assuming 'socket' is an instance of Socket from 'socket.io-client'
 import socket from '../lib/socket'; 
+
+// --- Types & Interfaces ---
+
+interface StockTickerCardProps {
+  symbol: string;
+}
+
+interface PriceUpdatePayload {
+  symbol: string;
+  price: number;
+}
+
+interface ChartDataPoint {
+  time: string;
+  price: number;
+}
+
+// Type for the static constant map
+const STOCK_NAMES: Record<string, string> = {
+    'GOOG': 'Google Inc.',
+    'TSLA': 'Tesla Inc.',
+    'AMZN': 'Amazon.com',
+    'META': 'Meta Platforms',
+    'NVDA': 'NVIDIA Corp.',
+    'AAPL': 'Apple Inc.',
+    'MSFT': 'Microsoft Corp.',
+    'AMD': 'Advance Micro Devices',
+    'NFLX': 'Netflix Inc.',
+    'INTC': 'Intel Corp.'
+};
 
 const MAX_DATA_POINTS = 30; 
 
-const STOCK_NAMES = {
-    'GOOG': 'Google',
-    'TSLA': 'Tesla',
-    'AMZN': 'Amazon',
-    'META': 'Meta Platforms',
-    'NVDA': 'Nvidia'
-};
-
-function StockTickerCard({ symbol }) { 
-    const [chartData, setChartData] = useState([]);
-    const [currentPrice, setCurrentPrice] = useState(null);
-    const [loading, setLoading] = useState(true);
+function StockTickerCard({ symbol }: StockTickerCardProps) { 
+    // Explicitly type the state
+    const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
+    const [currentPrice, setCurrentPrice] = useState<number | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
     
     useEffect(() => {
         if (!symbol) return; 
         
-        // 2. CONNECTION CHECK: Ensure the singleton is active
+        // 1. Connection Check
         if (!socket.connected) {
             console.log('[FE] Socket singleton disconnected, connecting...');
             socket.connect();
         }
 
-        // 3. SUBSCRIPTION LOGIC
+        // 2. Subscription Logic
         const subscribeToTicker = () => {
              console.log(`[FE] Subscribing to ${symbol}...`);
              socket.emit('subscribe', symbol);
@@ -40,18 +72,20 @@ function StockTickerCard({ symbol }) {
         // Re-subscribe if the connection drops and comes back
         socket.on('connect', subscribeToTicker);
 
-        // 4. DATA LISTENER
-        const handlePriceUpdate = (data) => {
+        // 3. Data Listener with typed payload
+        const handlePriceUpdate = (data: PriceUpdatePayload) => {
             if (data.symbol === symbol) {
                 setCurrentPrice(data.price); 
-                setLoading(false); // <--- Hides the "Loading..." text
+                setLoading(false); 
 
                 setChartData(prevData => {
-                    const newEntry = {
+                    const newEntry: ChartDataPoint = {
                         time: new Date().toLocaleTimeString('en-US', { hour12: false }),
                         price: data.price
                     };
+                    
                     const updatedData = [...prevData, newEntry];
+                    
                     if (updatedData.length > MAX_DATA_POINTS) {
                         updatedData.shift(); 
                     }
@@ -62,20 +96,21 @@ function StockTickerCard({ symbol }) {
 
         socket.on('price-update', handlePriceUpdate);
 
-        // 5. CLEANUP
+        // 4. Cleanup
         return () => {
-            // Remove listeners so we don't update state on unmounted component
             socket.off('price-update', handlePriceUpdate);
             socket.off('connect', subscribeToTicker);
-            
-            // NOTE: We do NOT emit 'unsubscribe' here to avoid the flash-disconnect issue.
-            // The server room logic handles standard disconnects.
         };
     }, [symbol]); 
 
-    // Formatters
-    const formatPrice = (price) => price ? `$${price.toFixed(2)}` : 'Loading...';
-    const formatTooltip = (value) => [`$${value.toFixed(2)}`, 'Price'];
+    // --- Formatters with Types ---
+    
+    const formatPrice = (price: number | null): string => 
+        price ? `$${price.toFixed(2)}` : 'Loading...';
+    
+    // Recharts tooltip formatter type signature
+    const formatTooltip = (value: number): [string, string] => 
+        [`$${value.toFixed(2)}`, 'Price'];
 
     return (
         <div className="p-6 bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-lg border border-gray-700">
@@ -101,22 +136,32 @@ function StockTickerCard({ symbol }) {
                         <LineChart data={chartData} margin={{ top: 5, right: 2, left: -20, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                             <XAxis 
-                                dataKey="time" stroke="#999" 
-                                interval="preserveStartEnd" tickLine={false} axisLine={false} minTickGap={50}
-                                tickFormatter={(time) => time.slice(0, 5)}
+                                dataKey="time" 
+                                stroke="#999" 
+                                interval="preserveStartEnd" 
+                                tickLine={false} 
+                                axisLine={false} 
+                                minTickGap={50}
+                                tickFormatter={(time: string) => time.slice(0, 5)}
                             />
                             <YAxis 
-                                stroke="#999" domain={['dataMin - 1', 'dataMax + 1']}
-                                tickFormatter={(value) => `$${value.toFixed(0)}`}
-                                axisLine={false} tickLine={false}
+                                stroke="#999" 
+                                domain={['dataMin - 1', 'dataMax + 1']}
+                                tickFormatter={(value: number) => `$${value.toFixed(0)}`}
+                                axisLine={false} 
+                                tickLine={false}
                             />
                             <Tooltip 
                                 contentStyle={{ backgroundColor: '#1A1A1A', border: '1px solid #444', color: 'white' }} 
-                                formatter={formatTooltip} 
+                                formatter={formatTooltip as any} // Cast to any often required due to strict Recharts types vs simple function
                             />
                             <Line 
-                                type="monotone" dataKey="price" stroke="#00B7FF" 
-                                strokeWidth={2} dot={false} isAnimationActive={false} 
+                                type="monotone" 
+                                dataKey="price" 
+                                stroke="#00B7FF" 
+                                strokeWidth={2} 
+                                dot={false} 
+                                isAnimationActive={false} 
                             />
                         </LineChart>
                     </ResponsiveContainer>
