@@ -34,7 +34,7 @@ export default function LiveNewsFeed() {
             // Artificial delay to show the "refresh" animation
             setTimeout(() => {
                 const shuffled = [...NEWS_DATABASE].sort(() => 0.5 - Math.random());
-                setNews(shuffled.slice(0, 5));
+                setNews(shuffled.slice(0, 3));
                 setIsUpdating(false);
             }, 500);
         };
