@@ -32,7 +32,7 @@
 import { io } from "socket.io-client";
 
 // Ensure this matches the port in your server.js (4000)
-const URL = "http://localhost:4000";
+const URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const socket = io(URL, { 
     autoConnect: false, // We connect manually in the useEffect
