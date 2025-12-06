@@ -1,5 +1,11 @@
+// lib/constants.ts
 export const NAV_ITEMS = [
-    { href: '/', label: 'Dashboard' },
-    { href: '/search', label: 'Search' },
-    { href: '/watchlist', label: 'Watchlist' },
+    {
+        label: "Dashboard",
+        href: "/"
+    },
+    {
+        label: "Market Place",
+        href: "/market"
+    }
 ];

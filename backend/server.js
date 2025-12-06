@@ -16,7 +16,7 @@ const io = new Server(server, {
 });
 
 // --- Core Data ---
-const SUPPORTED_STOCKS = ['GOOG', 'TSLA', 'AMZN', 'META', 'NVDA'];
+const SUPPORTED_STOCKS = ['GOOG', 'TSLA', 'AMZN', 'META', 'NVDA', 'AAPL', 'MSFT', 'AMD', 'NFLX', 'INTC'];
 let stocks = {};
 
 // Initialize prices
