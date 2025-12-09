@@ -19,7 +19,6 @@ interface StockStatsHoverProps {
 
 export default function StockStatsHover({ children, stats }: StockStatsHoverProps) {
     
-    // Helper to render icons based on label (since we can't pass icon functions from server)
     const getIcon = (label: string) => {
         if (label.includes('Market Cap')) return <DollarSign className="w-4 h-4 text-purple-400" />;
         if (label.includes('Volume')) return <BarChart3 className="w-4 h-4 text-blue-400" />;
@@ -29,12 +28,10 @@ export default function StockStatsHover({ children, stats }: StockStatsHoverProp
 
     return (
         <div className="relative group">
-            {/* The Actual Market Card */}
             <div className="relative z-10 transition-transform duration-300 group-hover:-translate-y-1">
                 {children}
             </div>
 
-            {/* The Hover Popup */}
             <div className="absolute inset-x-0 bottom-full mb-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none">
                 <div className="bg-[#13131F]/95 backdrop-blur-xl border border-white/10 p-4 rounded-xl shadow-2xl transform translate-y-2 group-hover:translate-y-0 transition-transform">
                     
@@ -50,7 +47,6 @@ export default function StockStatsHover({ children, stats }: StockStatsHoverProp
                         ))}
                     </div>
 
-                    {/* Little Triangle Arrow at bottom */}
                     <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[#13131F] border-r border-b border-white/10 rotate-45 transform"></div>
                 </div>
             </div>

@@ -9,7 +9,7 @@ import socket from '@/lib/socket';
 const typedSocket = socket as Socket;
 const MAX_DATA_POINTS = 50;
 
-// --- STATIC DATA CONFIG ---
+
 const STOCK_STATS: Record<string, { label: string; value: string; icon: any }[]> = {
     'GOOG': [
         { label: 'Market Cap', value: '1.82T', icon: DollarSign },

@@ -10,10 +10,8 @@ import {
   ResponsiveContainer,
   TooltipProps 
 } from 'recharts';
-// Assuming 'socket' is an instance of Socket from 'socket.io-client'
 import socket from '../lib/socket'; 
 
-// --- Types & Interfaces ---
 
 interface StockTickerCardProps {
   symbol: string;
@@ -29,7 +27,6 @@ interface ChartDataPoint {
   price: number;
 }
 
-// Type for the static constant map
 const STOCK_NAMES: Record<string, string> = {
     'GOOG': 'Google Inc.',
     'TSLA': 'Tesla Inc.',
@@ -46,7 +43,6 @@ const STOCK_NAMES: Record<string, string> = {
 const MAX_DATA_POINTS = 30; 
 
 function StockTickerCard({ symbol }: StockTickerCardProps) { 
-    // Explicitly type the state
     const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
     const [currentPrice, setCurrentPrice] = useState<number | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -54,25 +50,20 @@ function StockTickerCard({ symbol }: StockTickerCardProps) {
     useEffect(() => {
         if (!symbol) return; 
         
-        // 1. Connection Check
         if (!socket.connected) {
             console.log('[FE] Socket singleton disconnected, connecting...');
             socket.connect();
         }
 
-        // 2. Subscription Logic
         const subscribeToTicker = () => {
              console.log(`[FE] Subscribing to ${symbol}...`);
              socket.emit('subscribe', symbol);
         };
         
-        // Trigger immediately
         subscribeToTicker();
         
-        // Re-subscribe if the connection drops and comes back
         socket.on('connect', subscribeToTicker);
 
-        // 3. Data Listener with typed payload
         const handlePriceUpdate = (data: PriceUpdatePayload) => {
             if (data.symbol === symbol) {
                 setCurrentPrice(data.price); 
@@ -96,19 +87,15 @@ function StockTickerCard({ symbol }: StockTickerCardProps) {
 
         socket.on('price-update', handlePriceUpdate);
 
-        // 4. Cleanup
         return () => {
             socket.off('price-update', handlePriceUpdate);
             socket.off('connect', subscribeToTicker);
         };
     }, [symbol]); 
-
-    // --- Formatters with Types ---
     
     const formatPrice = (price: number | null): string => 
         price ? `$${price.toFixed(2)}` : 'Loading...';
     
-    // Recharts tooltip formatter type signature
     const formatTooltip = (value: number): [string, string] => 
         [`$${value.toFixed(2)}`, 'Price'];
 
@@ -153,7 +140,7 @@ function StockTickerCard({ symbol }: StockTickerCardProps) {
                             />
                             <Tooltip 
                                 contentStyle={{ backgroundColor: '#1A1A1A', border: '1px solid #444', color: 'white' }} 
-                                formatter={formatTooltip as any} // Cast to any often required due to strict Recharts types vs simple function
+                                formatter={formatTooltip as any} 
                             />
                             <Line 
                                 type="monotone" 

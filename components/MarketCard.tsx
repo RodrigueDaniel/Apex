@@ -3,7 +3,6 @@ import { useState, useTransition } from 'react';
 import { Star } from 'lucide-react';
 import { toggleWatchlist } from '@/app/actions/watchlist';
 
-// Map for full names
 const STOCK_NAMES: { [key: string]: string } = {
     'GOOG': 'Alphabet Inc.', 'TSLA': 'Tesla Inc.', 'AMZN': 'Amazon.com',
     'META': 'Meta Platforms', 'NVDA': 'NVIDIA Corp.', 'AAPL': 'Apple Inc.',
@@ -16,7 +15,6 @@ export default function MarketCard({ symbol, initialStarred }: { symbol: string,
     const [isPending, startTransition] = useTransition();
 
     const handleStarClick = () => {
-        // Optimistic UI update
         setIsStarred(!isStarred);
         
         startTransition(async () => {

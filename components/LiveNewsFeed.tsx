@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { Newspaper, RefreshCw } from 'lucide-react';
 
-// A large pool of news to cycle through
 const NEWS_DATABASE = [
     { source: "Bloomberg", headline: "Fed signals potential rate cuts coming in late Q3" },
     { source: "TechCrunch", headline: "AI Chip demand continues to outpace global supply chain" },
@@ -27,11 +26,10 @@ export default function LiveNewsFeed() {
     const [isUpdating, setIsUpdating] = useState(false);
 
     useEffect(() => {
-        // Function to shuffle and pick 5 new items
         const updateNews = () => {
             setIsUpdating(true);
             
-            // Artificial delay to show the "refresh" animation
+
             setTimeout(() => {
                 const shuffled = [...NEWS_DATABASE].sort(() => 0.5 - Math.random());
                 setNews(shuffled.slice(0, 3));
@@ -39,10 +37,8 @@ export default function LiveNewsFeed() {
             }, 500);
         };
 
-        // Set the timer for 5 minutes (300,000 ms)
         const interval = setInterval(updateNews, 300000);
 
-        // Cleanup timer when user leaves page
         return () => clearInterval(interval);
     }, []);
 
@@ -52,7 +48,6 @@ export default function LiveNewsFeed() {
                 <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                     <Newspaper className="w-4 h-4" /> Market News
                 </h4>
-                {/* Visual indicator that it is "Live" */}
                 <div className="flex items-center gap-2">
                      <span className={`w-2 h-2 rounded-full ${isUpdating ? 'bg-yellow-400 animate-pulse' : 'bg-green-500'}`}></span>
                      <span className="text-[10px] text-gray-500 font-mono">LIVE</span>

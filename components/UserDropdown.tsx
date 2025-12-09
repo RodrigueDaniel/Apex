@@ -13,30 +13,26 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import NavItems from "@/components/NavItems";
-import { signOut, useSession } from "@/lib/auth-client"; // Import Better Auth hooks
+import { signOut, useSession } from "@/lib/auth-client"; 
 
 const UserDropdown = () => {
     const router = useRouter();
     
-    // 1. Get Real User Session
     const { data: session } = useSession();
     const user = session?.user;
 
-    // 2. Handle Sign Out
     const handleSignOut = async () => {
         await signOut({
             fetchOptions: {
                 onSuccess: () => {
-                    router.push("/sign-in"); // Redirect to login page
+                    router.push("/sign-in");
                 },
             },
         });
     }
 
-    // If not logged in, don't show the dropdown (or show a Login button)
     if (!user) return null;
 
-    // Get the first letter of the name for the avatar fallback
     const userInitial = user.name ? user.name[0].toUpperCase() : "U";
 
     return (
@@ -44,7 +40,6 @@ const UserDropdown = () => {
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-3 hover:bg-gray-800 focus:ring-0">
                     <Avatar className="h-8 w-8">
-                        {/* Use real user image if available */}
                         <AvatarImage src={user.image || ""} />
                         <AvatarFallback className="bg-purple-600 text-white text-sm font-bold">
                             {userInitial}
@@ -80,7 +75,6 @@ const UserDropdown = () => {
 
                 <DropdownMenuSeparator className="bg-gray-800" />
                 
-                {/* Mobile Navigation inside Dropdown (Visible only on small screens) */}
                 <div className="sm:hidden">
                      <NavItems isMobile={true} />
                      <DropdownMenuSeparator className="bg-gray-800" />

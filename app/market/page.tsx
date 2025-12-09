@@ -3,14 +3,13 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db"; 
 import MarketCard from '@/components/MarketCard';
-import StockStatsHover from '@/components/StockStatsHover'; // <--- Import the new component
+import StockStatsHover from '@/components/StockStatsHover';
 
 const ALL_STOCKS = [
     'GOOG', 'TSLA', 'AMZN', 'META', 'NVDA', 
     'AAPL', 'MSFT', 'AMD', 'NFLX', 'INTC'
 ];
 
-// Define stats without the 'icon' component (handled on client)
 const STOCK_STATS: Record<string, { label: string; value: string }[]> = {
     'GOOG': [
         { label: 'Market Cap', value: '1.82T' },
@@ -74,7 +73,6 @@ const STOCK_STATS: Record<string, { label: string; value: string }[]> = {
     ]
 };
 
-// Fallback if data is missing
 const DEFAULT_STATS = [
     { label: 'Market Cap', value: '---' },
     { label: 'Volume', value: '---' },
@@ -111,11 +109,9 @@ export default async function MarketPage() {
                 {/* Grid Content */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {ALL_STOCKS.map((symbol) => {
-                        // Get the stats for this specific stock
                         const stats = STOCK_STATS[symbol] || DEFAULT_STATS;
 
                         return (
-                            // Wrap the Card with the Hover Component and pass the specific stats
                             <StockStatsHover key={symbol} stats={stats}>
                                 <MarketCard 
                                     symbol={symbol} 

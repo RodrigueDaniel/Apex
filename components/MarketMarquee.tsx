@@ -2,7 +2,6 @@
 
 import React from 'react';
 
-// Static data for the ticker tape
 const TICKER_DATA = [
   { symbol: 'SPY', price: '478.20', change: '+1.2%', up: true },
   { symbol: 'QQQ', price: '408.15', change: '+1.5%', up: true },
@@ -20,7 +19,6 @@ export default function MarketMarquee() {
       
       {/* The scrolling container */}
       <div className="flex animate-marquee whitespace-nowrap gap-12">
-        {/* We repeat the data 3 times to ensure a smooth infinite loop */}
         {[...TICKER_DATA, ...TICKER_DATA, ...TICKER_DATA].map((item, i) => (
           <div key={i} className="flex items-center gap-2 text-sm font-medium font-mono">
             <span className="text-gray-400">{item.symbol}</span>
@@ -32,7 +30,6 @@ export default function MarketMarquee() {
         ))}
       </div>
 
-      {/* CSS Animation Styles */}
       <style jsx global>{`
         @keyframes marquee {
           0% { transform: translateX(0); }

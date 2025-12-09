@@ -1,4 +1,3 @@
-// lib/constants.ts
 export const NAV_ITEMS = [
     {
         label: "Dashboard",

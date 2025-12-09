@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import UserDropdown from "@/components/UserDropdown";
-import NavItems from "@/components/NavItems"; // Import your component
+import NavItems from "@/components/NavItems"; 
 
 const Header = () => {
     return (
@@ -19,7 +19,6 @@ const Header = () => {
                     />
                 </Link>
 
-                {/* CENTER: Navigation Items (Hidden on mobile if needed, or visible) */}
                 <div className="hidden md:block">
                     <NavItems />
                 </div>

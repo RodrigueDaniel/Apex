@@ -13,7 +13,6 @@ export async function toggleWatchlist(symbol: string) {
   if (!session?.user?.id) return { error: "Not authenticated" };
 
   try {
-    // 1. Check if it exists in WATCHLIST
     const existing = await db.watchlist.findUnique({
       where: { 
         userId_symbol: {
@@ -24,13 +23,11 @@ export async function toggleWatchlist(symbol: string) {
     });
 
     if (existing) {
-      // 2. Remove
       await db.watchlist.delete({ where: { id: existing.id } });
       revalidatePath('/'); 
       revalidatePath('/market');
       return { status: 'removed' };
     } else {
-      // 3. Add
       await db.watchlist.create({
         data: { userId: session.user.id, symbol: symbol }
       });

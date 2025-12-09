@@ -13,11 +13,9 @@ interface ChartData {
 
 type ChartType = 'line' | 'area' | 'bar';
 
-// Now accepts 'data' from parent instead of fetching it internally
 const StockChart = ({ data, color = "#A855F7" }: { data: ChartData[], color?: string }) => { 
     const [chartType, setChartType] = useState<ChartType>('line');
 
-    // Custom Tooltip
     const CustomTooltip = ({ active, payload, label }: any) => {
         if (active && payload && payload.length) {
             return (

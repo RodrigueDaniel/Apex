@@ -6,10 +6,9 @@ import { db } from "@/lib/db";
 import WatchlistCard from '@/components/WatchlistCard';
 import Image from "next/image";
 import MarketMarquee from "@/components/MarketMarquee";
-import LiveNewsFeed from "@/components/LiveNewsFeed"; // <--- Import the new component
+import LiveNewsFeed from "@/components/LiveNewsFeed";
 import { TrendingUp } from 'lucide-react'; 
 
-// --- MAIN COMPONENT ---
 export default async function Dashboard() {
     const session = await auth.api.getSession({
         headers: await headers()
@@ -41,10 +40,8 @@ export default async function Dashboard() {
                     </div>
                 </div>
 
-                {/* --- MAIN LAYOUT GRID --- */}
                 <div className="flex flex-col lg:flex-row gap-8">
                     
-                    {/* LEFT COLUMN: WATCHLIST (Takes up 70% space) */}
                     <div className="flex-1">
                         
                         <div className="flex items-center justify-between mb-6">
@@ -79,14 +76,12 @@ export default async function Dashboard() {
                         )}
                     </div>
 
-                    {/* RIGHT COLUMN: SIDEBAR (Takes up 30% space) */}
                     <div className="w-full lg:w-80 flex flex-col">
-                        {/* Replaced Top Movers & Static News with Dynamic Live Feed */}
+
                         <LiveNewsFeed />
                     </div>
 
                 </div>
-                {/* --- END MAIN LAYOUT GRID --- */}
 
             </div>
         </div>

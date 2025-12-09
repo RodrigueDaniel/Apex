@@ -15,18 +15,15 @@ const io = new Server(server, {
     }
 });
 
-// --- Core Data ---
 const SUPPORTED_STOCKS = ['GOOG', 'TSLA', 'AMZN', 'META', 'NVDA', 'AAPL', 'MSFT', 'AMD', 'NFLX', 'INTC'];
 let stocks = {};
 
-// Initialize prices
 SUPPORTED_STOCKS.forEach(symbol => {
     stocks[symbol] = {
         currentPrice: parseFloat((Math.random() * 500 + 100).toFixed(2))
     };
 });
 
-// --- Real-Time Engine ---
 setInterval(() => {
     SUPPORTED_STOCKS.forEach(symbol => {
         const volatility = 4.00;
@@ -42,22 +39,19 @@ setInterval(() => {
             timestamp: new Date().toISOString()
         };
 
-        // Emit to the specific Room
         io.to(symbol).emit('price-update', updateData);
     });
 }, 1000);
 
-// --- Connection Logic ---
 io.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`);
 
-    // --- FIX 1: Restore the specific 'subscribe' handler for the React App ---
     socket.on('subscribe', (symbol) => {
         if (SUPPORTED_STOCKS.includes(symbol)) {
             socket.join(symbol);
             console.log(`[SUBSCRIPTION] ${socket.id} joined room: ${symbol}`);
             
-            // Emit immediate data so chart doesn't wait 1 second
+            
             socket.emit('price-update', {
                 symbol: symbol,
                 price: stocks[symbol].currentPrice,
@@ -68,7 +62,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // --- FIX 2: Keep the 'message' handler ONLY if you still want to use Postman ---
+    
     socket.on('message', (message) => {
         try {
             let eventName, symbol;

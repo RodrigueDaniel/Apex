@@ -18,7 +18,6 @@ const WatchlistCard = ({ symbol }: { symbol: string }) => {
     const [price, setPrice] = useState<number | null>(null);
     const [trend, setTrend] = useState<'up' | 'down' | 'neutral'>('neutral');
 
-    // ... (Your existing useEffect logic remains exactly the same) ...
     useEffect(() => {
         if (!symbol) return;
         if (!typedSocket.connected) typedSocket.connect();
@@ -51,14 +50,11 @@ const WatchlistCard = ({ symbol }: { symbol: string }) => {
 
     return (
         <div 
-            // ✅ ENABLE NAVIGATION HERE
             onClick={() => router.push(`/${symbol}`)} 
             className="group relative p-6 bg-[#13131F] rounded-2xl border border-white/5 
                        hover:border-purple-500/50 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] 
                        transition-all duration-300 cursor-pointer overflow-hidden"
         >
-            {/* ... (Rest of your JSX remains exactly the same) ... */}
-            {/* Background Gradient Blob */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-purple-600/20 transition-all duration-500"></div>
 
             <div className="flex justify-between items-start mb-4 relative z-10">
