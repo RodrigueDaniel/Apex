@@ -1,25 +1,52 @@
 # Apex — Real-time Stock Dashboard
 
-Apex is a personal project: a real-time stock/market dashboard built with Next.js (app router) and Prisma. It includes a frontend (React + Next), a lightweight backend server (in `backend/`) used for socket feeds, and Postgres + Prisma for persistence.
+Apex is a personal project demonstrating a full-stack, real-time market dashboard. It features a Next.js App Router frontend, a dedicated Node.js socket server for live market feeds, and a robust PostgreSQL database managed via Prisma.
 
-**Quick summary**
-- Frontend: Next.js 16 (app directory), React 19, TypeScript
-- Backend: simple Node server in `backend/` (socket provider)
-- Database: PostgreSQL via Prisma
-- Real-time: Socket.io client connects to the backend socket server
+## ⚡ Features
+- **Real-time Updates:** Market tickers and stock values pulse and update every second via Socket.io.
 
-## Features
-- Real-time market tickers and charts
-- User accounts (email/password + Google social provider)
-- Watchlist per user, persisted in the database
-- Simple transaction model for buy/sell recording
+- **Secure Authentication:** Support for Google OAuth and standard Email/Password login.
 
-## Tech stack
-- Next.js (app router)
-- React 19 + TypeScript
-- Prisma + PostgreSQL
-- Socket.io (real-time updates)
-- Tailwind CSS for styling
+- **Personal Watchlist:** Users can star stocks to build a persistent portfolio saved in the database.
+
+- **Interactive Charts:** Dynamic visualization with toggleable graph styles (Line, Area, Bar).
+
+- **Transaction Model:** Built-in structure for recording buy/sell actions.
+
+🛠️ Tech Stack
+- Frontend: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS
+
+- Backend: Node.js (Express/Http server for sockets)
+
+- Real-time: Socket.io
+
+- Database: PostgreSQL, Prisma ORM
+
+## 🚀 Usage Flow
+- **Sign In & Get Started 🔐:** Log in effortlessly using your Google account or create a secure account with email and password. 
+- You will land immediately on your personal Dashboard.
+
+- **Build Your Portfolio:** Your dashboard starts as a empty ("No stocks watched").
+- Click the **"Browse Explore"** button to enter the market view and find assets to track.
+
+### Adding Stocks:
+
+- On the Explore Page, you can see everything the market has to offer.
+
+- Hover over any stock card to reveal instant details.
+
+- Click the **Star (⭐) icon** on any card to "Watch" that stock and pin it to your Dashboard.
+
+- **Real-Time Tracking ⚡** Head back to your Dashboard. Your starred stocks are now live!.
+- Watch their values pulse and update every second via our real-time socket connection.
+
+- **Deep Dive Analysis 📈 Want more data?** Click on any stock in your list to open the detailed graph view. Customize your view by toggling between:
+
+    - Line Graph (Default)
+
+    - Area Chart
+
+    - Bar Chart
 
 ## Environment
 Create a `.env` file in the project root. The project expects at minimum these variables:
@@ -32,34 +59,34 @@ Create a `.env` file in the project root. The project expects at minimum these v
 
 Adjust other provider secrets or settings as needed.
 
-## Setup (development)
+## 📦 Setup (development)
 1. Install dependencies:
 
 ```powershell
 npm install
 ```
 
-2. Prepare the database (run migrations or `prisma migrate dev` if you maintain migrations):
+2. Prepare the database Run migrations to set up your PostgreSQL schema:
 
 ```powershell
 npx prisma generate
-# if you have migrations:
+
 npx prisma migrate dev
 ```
 
-3. Start the backend socket server (runs `backend/server.js`):
+3. Start the backend socket server This runs the lightweight server located in backend/server.js:
 
 ```powershell
 npm run backend
 ```
 
-4. Run the Next.js frontend in development:
+4. Run the Next.js frontend
 
 ```powershell
 npm run dev
 ```
 
-Tip: to run both frontend and backend together use the `dev:all` script:
+💡 Pro Tip: To run both the frontend and backend concurrently in a single terminal, use:
 
 ```powershell
 npm run dev:all
